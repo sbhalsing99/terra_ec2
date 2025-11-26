@@ -52,7 +52,7 @@ jobs:
 
       # INIT with S3 backend
       - name: Terraform Init (EC2)
-        run: cd ec2 && terraform init -reconfigure
+        run: terraform init -reconfigure
 
       - name: Terraform Apply (EC2)
-        run: cd ec2 && terraform apply -auto-approve
+        run: terraform apply -auto-approve
