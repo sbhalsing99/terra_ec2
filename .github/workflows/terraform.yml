@@ -21,16 +21,18 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
+          aws-region: us-east-1
 
-      - name: Terraform Init
-        run: terraform init
+      # Step 1: Apply backend infra (S3 + DynamoDB)
+      - name: Terraform Init (remote-infra)
+        run: cd remote-infra && terraform init -reconfigure
 
-      - name: Terraform Validate
-        run: terraform validate
+      - name: Terraform Apply (remote-infra)
+        run: cd remote-infra && terraform apply -auto-approve
 
-      - name: Terraform Plan
-        run: terraform plan -var-file="terraform.tfvars"
+      # Step 2: EC2 resources
+      - name: Terraform Init (EC2)
+        run: cd ec2 && terraform init
 
-      - name: Terraform Apply
-        run: terraform apply -var-file="terraform.tfvars" -auto-approve
+      - name: Terraform Apply (EC2)
+        run: cd ec2 && terraform apply -auto-approve
