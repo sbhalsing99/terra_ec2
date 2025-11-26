@@ -56,3 +56,4 @@ jobs:
 
       - name: Terraform Apply (EC2)
         run: terraform apply -auto-approve
+      
