@@ -1,27 +1,31 @@
-##########################################
-# Provider
-##########################################
-
 provider "aws" {
   region = "us-east-1"
 }
 
-##########################################
-# VPC & Subnet (default)
-##########################################
-
+# ────────────────────────────────────────────
+# Get Default VPC
+# ────────────────────────────────────────────
 data "aws_vpc" "default" {
   default = true
 }
-##########################################
-# Security Group
-##########################################
 
+# ────────────────────────────────────────────
+# Get Subnets from Default VPC
+# ────────────────────────────────────────────
+data "aws_subnets" "default" {
+  filter {
+    name   = "vpc-id"
+    values = [data.aws_vpc.default.id]
+  }
+}
+
+# ────────────────────────────────────────────
+# Security Group
+# ────────────────────────────────────────────
 resource "aws_security_group" "ec2_sg" {
   name        = "ec2-sg"
   description = "Allow SSH"
-
-  vpc_id = data.aws_vpc.default.id
+  vpc_id      = data.aws_vpc.default.id
 
   ingress {
     description = "SSH"
@@ -39,13 +43,14 @@ resource "aws_security_group" "ec2_sg" {
   }
 }
 
-##########################################
+# ────────────────────────────────────────────
 # EC2 Instance
-##########################################
-
+# ────────────────────────────────────────────
 resource "aws_instance" "my_ec2" {
-  ami           = "ami = "ami-080e1f13689e07408" 
+  ami           = "ami-0c02fb55956c7d316" # Latest Amazon Linux 2 for us-east-1
   instance_type = "t2.micro"
+
+  subnet_id              = data.aws_subnets.default.ids[0]
   vpc_security_group_ids = [aws_security_group.ec2_sg.id]
 
   tags = {
@@ -53,10 +58,9 @@ resource "aws_instance" "my_ec2" {
   }
 }
 
-##########################################
+# ────────────────────────────────────────────
 # Output
-##########################################
-
+# ────────────────────────────────────────────
 output "ec2_public_ip" {
   value = aws_instance.my_ec2.public_ip
 }
