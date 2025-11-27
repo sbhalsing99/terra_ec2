@@ -3,7 +3,7 @@
 ##########################################
 
 provider "aws" {
-  region = "ap-south-1"
+  region = "us-east-1"
 }
 
 ##########################################
@@ -44,7 +44,7 @@ resource "aws_security_group" "ec2_sg" {
 ##########################################
 
 resource "aws_instance" "my_ec2" {
-  ami           = "ami-0f58b397bc5c1f766" # Amazon Linux 2 (Mumbai)
+  ami           = "ami-0f58b397bc5c1f766 " # Amazon Linux 2 (Mumbai)
   instance_type = "t2.micro"
   vpc_security_group_ids = [aws_security_group.ec2_sg.id]
 
