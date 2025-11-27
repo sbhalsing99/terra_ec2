@@ -24,7 +24,6 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
 
-      # APPLY backend infra (NO backend)
       - name: Terraform Init (bootstrap)
         run: cd bootstrap && terraform init
 
@@ -50,10 +49,9 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
 
-      # INIT with S3 backend
-      - name: Terraform Init (EC2)
+      # Your main infra root
+      - name: Terraform Init
         run: terraform init -reconfigure
 
-      - name: Terraform Apply (EC2)
+      - name: Terraform Apply
         run: terraform apply -auto-approve
-      
