@@ -1,7 +1,3 @@
-provider "aws" {
-  region = "us-east-1"
-}
-
 resource "aws_s3_bucket" "tf_backend" {
   bucket = "shruti-tf-backend-bucket"
   force_destroy = false
