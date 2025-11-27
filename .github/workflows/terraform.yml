@@ -49,9 +49,9 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
 
-      # Your main infra root
-      - name: Terraform Init
+      # ✔ FIX: ROOT DIRECTORY मध्ये init चालव
+      - name: Terraform Init (EC2)
         run: terraform init -reconfigure
 
-      - name: Terraform Apply
+      - name: Terraform Apply (EC2)
         run: terraform apply -auto-approve

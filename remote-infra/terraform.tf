@@ -1,7 +1,7 @@
 terraform {
   backend "s3" {
     bucket         = "shruti-tf-backend-bucket"
-    key            = "terraform.tfstate"
+    key            = "ec2/terraform.tfstate"
     region         = "us-east-1"
     dynamodb_table = "terraform-state-lock"
     encrypt        = true
