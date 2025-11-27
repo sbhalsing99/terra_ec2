@@ -2,59 +2,42 @@ name: Terraform Deployment
 
 on:
   push:
-    branches: ["main"]
-  workflow_dispatch:
+    branches:
+      - main
 
 jobs:
-
-  backend-infra:
-    name: Create Terraform Backend (S3 + DynamoDB)
+  terraform:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-      - name: Setup Terraform
+      - name: Set up Terraform
         uses: hashicorp/setup-terraform@v2
 
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
-
-      # STEP 1: Initialize & Apply BOOTSTRAP (NO BACKEND)
+      ##########################################
+      # 1) REMOTE-INFRA (Backend Setup First)
+      ##########################################
       - name: Terraform Init (remote-infra)
-        run: cd remote-infra && terraform init -reconfigure
-
-      - name: Terraform Apply (remote-infra)
-        run: cd remote-infra && terraform apply -auto-approve
-
-
-  deploy-infra:
-    name: Deploy EC2 using S3 Backend
-    needs: backend-infra
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
-
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2
-
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
-
-      # STEP 2: RUN TERRAFORM FROM remote-infra FOLDER (backend present here)
-      - name: Terraform Init 
+        working-directory: ./remote-infra
         run: terraform init -reconfigure
 
-      - name: Terraform Apply 
+      - name: Terraform Apply (remote-infra)
+        working-directory: ./remote-infra
+        run: terraform apply -auto-approve
+
+      ##########################################
+      # 2) EC2 Infra (Uses S3 Backend Now)
+      ##########################################
+      - name: Terraform Init (ec2)
+        working-directory: ./ec2
+        run: terraform init -reconfigure
+
+      - name: Terraform Plan (ec2)
+        working-directory: ./ec2
+        run: terraform plan
+
+      - name: Terraform Apply (ec2)
+        working-directory: ./ec2
         run: terraform apply -auto-approve
