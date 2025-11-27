@@ -3,11 +3,6 @@ terraform {
     bucket         = "shruti-tf-backend-bucket"
     key            = "ec2/terraform.tfstate"
     region         = "us-east-1"
-    dynamodb_table = "terraform-state-lock"
-    encrypt        = true
+    use_lockfile   = true
   }
-}
-
-provider "aws" {
-  region = var.region
 }

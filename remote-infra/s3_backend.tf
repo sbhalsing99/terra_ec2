@@ -25,7 +25,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "sse" {
   }
 }
 
-resource "aws_dynamodb_table" "tf_lock" {
+resource "use_lockfile" "tf_lock" {
   name         = "terraform-lock-table"
   billing_mode = "PAY_PER_REQUEST"
   hash_key     = "LockID"
