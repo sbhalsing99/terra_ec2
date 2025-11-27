@@ -46,7 +46,6 @@ resource "aws_security_group" "ec2_sg" {
 resource "aws_instance" "my_ec2" {
   ami           = "ami-0f58b397bc5c1f766" # Amazon Linux 2 (Mumbai)
   instance_type = "t2.micro"
-  subnet_id     = element(data.aws_subnet_ids.default.ids, 0)
   vpc_security_group_ids = [aws_security_group.ec2_sg.id]
 
   tags = {
