@@ -6,6 +6,7 @@ on:
   workflow_dispatch:
 
 jobs:
+
   backend-infra:
     name: Create Terraform Backend (S3 + DynamoDB)
     runs-on: ubuntu-latest
@@ -24,11 +25,13 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
 
-      - name: Terraform Init (bootstrap)
-        run: cd bootstrap && terraform init
+      # STEP 1: Initialize & Apply BOOTSTRAP (NO BACKEND)
+      - name: Terraform Init (remote-infra)
+        run: cd remote-infra && terraform init -reconfigure
 
-      - name: Terraform Apply (bootstrap)
-        run: cd bootstrap && terraform apply -auto-approve
+      - name: Terraform Apply (remote-infra)
+        run: cd remote-infra && terraform apply -auto-approve
+
 
   deploy-infra:
     name: Deploy EC2 using S3 Backend
@@ -49,9 +52,9 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
 
-      # ✔ FIX: ROOT DIRECTORY मध्ये init चालव
-      - name: Terraform Init (EC2)
+      # STEP 2: RUN TERRAFORM FROM remote-infra FOLDER (backend present here)
+      - name: Terraform Init 
         run: terraform init -reconfigure
 
-      - name: Terraform Apply (EC2)
+      - name: Terraform Apply 
         run: terraform apply -auto-approve
